@@ -168,8 +168,111 @@
   </script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyALDfWG6FJLLE2afUGiRnR4knsCmvi7Ylk",
+    authDomain: "sanctuary-9117d.firebaseapp.com",
+    databaseURL: "https://sanctuary-9117d-default-rtdb.firebaseio.com",
+    projectId: "sanctuary-9117d",
+    storageBucket: "sanctuary-9117d.appspot.com",
+    messagingSenderId: "838948121825",
+    appId: "1:838948121825:web:113f930bc14856040d9ba0"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const prayerWall = document.getElementById("prayer-wall");
+  const commentWall = document.getElementById("comment-wall");
+
+  function addPrayerToWall(text, id) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "prayer-entry";
+    const span = document.createElement("span");
+    span.textContent = `🙏 ${text}`;
+
+    const counter = document.createElement("span");
+    counter.style.margin = "0 10px";
+    counter.id = `counter-${id}`;
+    counter.textContent = "❤️ 0";
+
+    const button = document.createElement("button");
+    button.className = "pray-button";
+    button.textContent = "💖 I prayed";
+    button.onclick = () => {
+      db.ref(`prayers/${id}/count`).transaction(n => (n || 0) + 1);
+      button.textContent = "✨ Prayed!";
+      button.disabled = true;
+      button.style.opacity = 0.7;
+    };
+
+    wrapper.appendChild(span);
+    wrapper.appendChild(counter);
+    wrapper.appendChild(button);
+    prayerWall.appendChild(wrapper);
+
+    db.ref(`prayers/${id}/count`).on("value", snap => {
+      counter.textContent = `❤️ ${snap.val() || 0}`;
+    });
+  }
+
+  function addCommentToWall(text, id) {
+    const box = document.createElement("div");
+    box.className = "comment-box";
+    const content = document.createElement("span");
+    content.textContent = `💬 ${text}`;
+
+    const like = document.createElement("button");
+    like.className = "pray-button";
+    like.style.marginLeft = "10px";
+    like.textContent = "❤️ 0";
+    like.onclick = () => {
+      db.ref(`comments/${id}/likes`).transaction(n => (n || 0) + 1);
+    };
+
+    box.appendChild(content);
+    box.appendChild(like);
+    commentWall.appendChild(box);
+
+    db.ref(`comments/${id}/likes`).on("value", snap => {
+      like.textContent = `❤️ ${snap.val() || 0}`;
+    });
+  }
+
+  document.getElementById("prayer-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const text = document.getElementById("prayer-text").value.trim();
+    if (text !== "") {
+      document.getElementById("confirmation").style.display = "block";
+      document.getElementById("prayer-text").value = "";
+      db.ref("prayers").push({ text, count: 0 });
+    }
+  });
+
+  document.getElementById("comment-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const text = document.getElementById("comment-text").value.trim();
+    if (text !== "") {
+      document.getElementById("comment-text").value = "";
+      db.ref("comments").push({ text });
+    }
+  });
+
+  db.ref("prayers").on("child_added", snapshot => {
+    const { text } = snapshot.val();
+    const id = snapshot.key;
+    addPrayerToWall(text, id);
+  });
+
+  db.ref("comments").on("child_added", snapshot => {
+    const { text } = snapshot.val();
+    const id = snapshot.key;
+    addCommentToWall(text, id);
+  });
+</script>
 </body>
 </html>
+
 
 
 
