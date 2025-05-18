@@ -85,7 +85,7 @@
       background: #fff;
       border-radius: 50%;
       animation: floatStar 6s linear infinite;
-      z-index: 1;
+      z-index: 0;
       opacity: 0.7;
     }
     @keyframes floatStar {
@@ -95,31 +95,24 @@
   </style>
 </head>
 <body>
-  <button id="play-sound" style="position: fixed; top: 10px; right: 10px; background-color: #e8eaf6; border: 1px solid #ccc; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; z-index: 999;">
+  <div id="intro-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(to bottom, #f5f7fa, #d7e1ec); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; text-align: center; font-family: 'Playfair Display', serif; background-image: url('https://www.transparenttextures.com/patterns/quiet-pattern.png'); background-size: cover; overflow: hidden; box-shadow: inset 0 0 80px rgba(0,0,0,0.05);">
+    <h1 style="font-size: 2.5rem; color: #4e5e7b; margin-bottom: 1rem;">Welcome to the Sanctuary</h1>
+    <p style="font-size: 1.1rem; color: #6d7a94; max-width: 80%;">A sacred space to rest, release, and be held. Your prayers rise like incense. Leave a kind note, whisper your worries, or simply breathe.</p>
+    <button onclick="enterSanctuary()" style="margin-top: 2rem; padding: 0.8rem 2rem; background-color: #7b8da3; color: white; border: none; border-radius: 20px; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">✨ Enter Sanctuary ✨</button>
+  <div class="floating-leaf" style="position: absolute; top: 10%; left: 15%; font-size: 3rem; transform: rotate(-15deg); opacity: 0.2;">🍃</div>
+<div class="floating-leaf" style="position: absolute; bottom: 15%; right: 20%; font-size: 2.5rem; transform: rotate(10deg); opacity: 0.2;">🌿</div>
+<div class="floating-leaf" style="position: absolute; top: 5%; left: 10%; font-size: 3rem; transform: rotate(-10deg); opacity: 0.15;">🕊️</div>
+<div class="floating-leaf" style="position: absolute; bottom: 10%; right: 15%; font-size: 2.5rem; transform: rotate(15deg); opacity: 0.15;">🌸</div>
+</div>
+<button id="play-sound" style="position: fixed; top: 10px; right: 10px; background-color: #e8eaf6; border: 1px solid #ccc; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; z-index: 999;">
     🌧️ Turn on rain
   </button>
   <audio id="rain-sound" loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_499e1d1c80.mp3?filename=rain-ambient-110397.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
-  <script>
-    document.getElementById("play-sound").addEventListener("click", () => {
-      const audio = document.getElementById("rain-sound");
-      audio.play();
-    });
 
-    for (let i = 0; i < 20; i++) {
-      const star = document.createElement('div');
-      star.classList.add('star');
-      star.style.left = `${Math.random() * 100}vw`;
-      star.style.top = `${Math.random() * 100}vh`;
-      star.style.animationDuration = `${4 + Math.random() * 4}s`;
-      star.style.opacity = Math.random();
-      document.body.appendChild(star);
-    }
-  </script>
-
-  <div class="section">
+  <div class="section" style="display: none; position: relative; z-index: 1;" id="main-content">
     <h2>🙏 Submit a Prayer Request</h2>
     <form id="prayer-form">
       <textarea id="prayer-text" placeholder="What do you need prayer for? It stays anonymous 💌" required></textarea>
@@ -130,11 +123,11 @@
       Your prayer request was sent anonymously 🙏
     </div>
   </div>
-  <div class="section">
+  <div class="section" style="display: none; position: relative; z-index: 1;" id="secondary-content">
     <h2>💖 Community Prayer Wall</h2>
     <div id="prayer-wall" style="padding: 1rem; background: #f5f7fb; border-radius: 12px; max-height: 300px; overflow-y: auto;"></div>
   </div>
-  <div class="section">
+  <div class="section" style="display: none; position: relative; z-index: 1;" id="final-content">
     <h2>💌 Leave a Kind Note</h2>
     <form id="comment-form">
       <textarea id="comment-text" placeholder="Leave an uplifting message or encouragement 💫" required></textarea>
@@ -150,132 +143,31 @@
   </footer>
   <div style="text-align: center; margin-top: 1rem; font-style: italic; color: #6d7a94; font-size: 1rem;" id="scripture"></div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyALDfWG6FJLLE2afUGiRnR4knsCmvi7Ylk",
-      authDomain: "sanctuary-9117d.firebaseapp.com",
-      databaseURL: "https://sanctuary-9117d-default-rtdb.firebaseio.com",
-      projectId: "sanctuary-9117d",
-      storageBucket: "sanctuary-9117d.appspot.com",
-      messagingSenderId: "838948121825",
-      appId: "1:838948121825:web:113f930bc14856040d9ba0"
-    };
+    function enterSanctuary() {
+  document.getElementById("intro-screen").style.display = "none";
+  document.getElementById("main-content").style.display = "block";
+  document.getElementById("secondary-content").style.display = "block";
+  document.getElementById("final-content").style.display = "block";
+}
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const prayerWall = document.getElementById("prayer-wall");
-    const commentWall = document.getElementById("comment-wall");
-
-    function addPrayerToWall(text, prayerId) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "prayer-entry";
-      const span = document.createElement("span");
-      span.textContent = `🙏 ${text}`;
-
-      const counter = document.createElement("span");
-      counter.style.margin = "0 10px";
-      counter.id = `counter-${prayerId}`;
-      counter.textContent = "❤️ 0";
-
-      const button = document.createElement("button");
-      button.className = "pray-button";
-      button.textContent = "💖 I prayed";
-      button.onclick = () => {
-        db.ref(`prayers/${prayerId}/count`).transaction(n => (n || 0) + 1);
-        button.textContent = "✨ Prayed!";
-        button.disabled = true;
-        button.style.opacity = 0.7;
-      };
-
-      wrapper.appendChild(span);
-      wrapper.appendChild(counter);
-      wrapper.appendChild(button);
-      prayerWall.appendChild(wrapper);
-    }
-
-    function addCommentToWall(text, commentId) {
-      const box = document.createElement("div");
-      box.className = "comment-box";
-      const content = document.createElement("span");
-      content.textContent = `💬 ${text}`;
-
-      const like = document.createElement("button");
-      like.className = "pray-button";
-      like.style.marginLeft = "10px";
-      like.textContent = "❤️ 0";
-
-      like.onclick = () => {
-        db.ref(`comments/${commentId}/likes`).transaction(n => (n || 0) + 1);
-      };
-
-      box.appendChild(content);
-      box.appendChild(like);
-      commentWall.appendChild(box);
-
-      db.ref(`comments/${commentId}/likes`).on("value", snap => {
-        like.textContent = `❤️ ${snap.val() || 0}`;
-      });
-    }
-
-    document.getElementById("prayer-form").addEventListener("submit", e => {
-      e.preventDefault();
-      const text = document.getElementById("prayer-text").value;
-      if (text.trim() !== "") {
-        document.getElementById("confirmation").style.display = "block";
-        document.getElementById("prayer-text").value = "";
-        db.ref("prayers").push({ text, count: 0 });
-      }
+    document.getElementById("play-sound").addEventListener("click", () => {
+      const audio = document.getElementById("rain-sound");
+      audio.play();
     });
 
-    document.getElementById("comment-form").addEventListener("submit", e => {
-      e.preventDefault();
-      const text = document.getElementById("comment-text").value;
-      if (text.trim() !== "") {
-        document.getElementById("comment-text").value = "";
-        db.ref("comments").push({ text });
-      }
-    });
-
-    db.ref("prayers").on("child_added", snapshot => {
-      const { text, count = 0 } = snapshot.val();
-      const id = snapshot.key;
-      addPrayerToWall(text, id);
-      const counterEl = document.getElementById(`counter-${id}`);
-      if (counterEl) counterEl.textContent = `❤️ ${count}`;
-
-      db.ref(`prayers/${id}/count`).on("value", snap => {
-        if (counterEl) counterEl.textContent = `❤️ ${snap.val() || 0}`;
-      });
-    });
-
-    db.ref("comments").on("child_added", snapshot => {
-      const { text } = snapshot.val();
-      const id = snapshot.key;
-      addCommentToWall(text, id);
-    });
-
-    const scriptures = [
-      "The Lord is close to the brokenhearted. — Psalm 34:18",
-      "Cast all your anxiety on Him because He cares for you. — 1 Peter 5:7",
-      "Be still, and know that I am God. — Psalm 46:10",
-      "The joy of the Lord is your strength. — Nehemiah 8:10",
-      "I can do all things through Christ who strengthens me. — Philippians 4:13",
-      "Even though I walk through the valley, I will fear no evil. — Psalm 23:4",
-      "The steadfast love of the Lord never ceases. — Lamentations 3:22",
-      "Let all that you do be done in love. — 1 Corinthians 16:14",
-      "God is within her, she will not fall. — Psalm 46:5",
-      "Faith is the assurance of things hoped for. — Hebrews 11:1"
-    ];
-
-    const scriptureEl = document.getElementById("scripture");
-    if (scriptureEl) {
-      const verse = scriptures[Math.floor(Math.random() * scriptures.length)];
-      scriptureEl.textContent = verse;
+    for (let i = 0; i < 20; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = `${Math.random() * 100}vw`;
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.animationDuration = `${4 + Math.random() * 4}s`;
+      star.style.opacity = Math.random();
+      document.body.appendChild(star);
     }
   </script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </body>
 </html>
 
