@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Self-Care Sanctuary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Quicksand&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to bottom right, #f9f9fc, #e3e9f2);
+      color: #44475a;
+      background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png');
+    }
+    .section {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(100, 120, 160, 0.1);
+    }
+    .section h2 {
+      font-family: 'Playfair Display', serif;
+      color: #4e5e7b;
+      margin-bottom: 1rem;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #c0cbe4;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Quicksand', sans-serif;
+    }
+    button {
+      background-color: #a3b6d3;
+      color: #fff;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #8d9db8;
+    }
+    .prayer-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f0f3f9;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(170, 180, 200, 0.15);
+    }
+    .pray-button {
+      background-color: #7f9dbd;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .pray-button:hover {
+      background-color: #6989a7;
+    }
+    .comment-box {
+      background: #eef1f7;
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 4px 10px rgba(160, 170, 190, 0.15);
+    }
+    .star {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: #fff;
+      border-radius: 50%;
+      animation: floatStar 6s linear infinite;
+      z-index: 1;
+      opacity: 0.7;
+    }
+    @keyframes floatStar {
+      from { transform: translateY(100vh) translateX(0); opacity: 0; }
+      to { transform: translateY(-10vh) translateX(20px); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <button id="play-sound" style="position: fixed; top: 10px; right: 10px; background-color: #e8eaf6; border: 1px solid #ccc; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-family: 'Quicksand', sans-serif; z-index: 999;">
+    🌧️ Turn on rain
+  </button>
+  <audio id="rain-sound" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_499e1d1c80.mp3?filename=rain-ambient-110397.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <script>
+    document.getElementById("play-sound").addEventListener("click", () => {
+      const audio = document.getElementById("rain-sound");
+      audio.play();
+    });
+
+    for (let i = 0; i < 20; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = `${Math.random() * 100}vw`;
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.animationDuration = `${4 + Math.random() * 4}s`;
+      star.style.opacity = Math.random();
+      document.body.appendChild(star);
+    }
+  </script>
+
+  <div class="section">
+    <h2>🙏 Submit a Prayer Request</h2>
+    <form id="prayer-form">
+      <textarea id="prayer-text" placeholder="What do you need prayer for? It stays anonymous 💌" required></textarea>
+      <br />
+      <button type="submit">Send Prayer</button>
+    </form>
+    <div id="confirmation" style="display:none; margin-top: 1rem; color: #4e5e7b; font-weight: bold;">
+      Your prayer request was sent anonymously 🙏
+    </div>
+  </div>
+  <div class="section">
+    <h2>💖 Community Prayer Wall</h2>
+    <div id="prayer-wall" style="padding: 1rem; background: #f5f7fb; border-radius: 12px; max-height: 300px; overflow-y: auto;">
+      <p style="color:#888">No prayer requests yet. Be the first to share ✨</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2>💌 Leave a Kind Note</h2>
+    <form id="comment-form">
+      <textarea id="comment-text" placeholder="Leave an uplifting message or encouragement 💫" required></textarea>
+      <br />
+      <button type="submit">Post Comment</button>
+    </form>
+    <div id="comment-wall" style="padding: 1rem; background: #f0f3f9; border-radius: 12px; margin-top: 1rem;">
+      <p style="color:#888">No comments yet. Your kindness matters ✨</p>
+    </div>
+  </div>
+
+  <footer style="text-align: center; margin-top: 4rem; padding: 1rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #7a88a1;">
+    🌸 You are never alone. You are loved. This sanctuary is always open.
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyALDfWG6FJLLE2afUGiRnR4knsCmvi7Ylk",
+      authDomain: "sanctuary-9117d.firebaseapp.com",
+      databaseURL: "https://sanctuary-9117d-default-rtdb.firebaseio.com",
+      projectId: "sanctuary-9117d",
+      storageBucket: "sanctuary-9117d.appspot.com",
+      messagingSenderId: "838948121825",
+      appId: "1:838948121825:web:113f930bc14856040d9ba0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const prayerWall = document.getElementById("prayer-wall");
+    const commentWall = document.getElementById("comment-wall");
+
+    function addPrayerToWall(text) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "prayer-entry";
+      const span = document.createElement("span");
+      span.textContent = `🙏 ${text}`;
+      const button = document.createElement("button");
+      button.className = "pray-button";
+      button.textContent = "💖 I prayed";
+      button.onclick = () => {
+        button.textContent = "✨ Prayed!";
+        button.disabled = true;
+        button.style.opacity = 0.7;
+      };
+      wrapper.appendChild(span);
+      wrapper.appendChild(button);
+      prayerWall.appendChild(wrapper);
+    }
+
+    function addCommentToWall(text) {
+      const box = document.createElement("div");
+      box.className = "comment-box";
+      box.textContent = `💬 ${text}`;
+      commentWall.appendChild(box);
+    }
+
+    document.getElementById("prayer-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const text = document.getElementById("prayer-text").value;
+      if (text.trim() !== "") {
+        document.getElementById("confirmation").style.display = "block";
+        document.getElementById("prayer-text").value = "";
+        push(ref(db, "prayers"), { text });
+      }
+    });
+
+    document.getElementById("comment-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const text = document.getElementById("comment-text").value;
+      if (text.trim() !== "") {
+        document.getElementById("comment-text").value = "";
+        push(ref(db, "comments"), { text });
+      }
+    });
+
+    onChildAdded(ref(db, "prayers"), snapshot => {
+      const { text } = snapshot.val();
+      if (prayerWall.querySelector("p")) prayerWall.innerHTML = "";
+      addPrayerToWall(text);
+    });
+
+    onChildAdded(ref(db, "comments"), snapshot => {
+      const { text } = snapshot.val();
+      if (commentWall.querySelector("p")) commentWall.innerHTML = "";
+      addCommentToWall(text);
+    });
+  </script>
+</body>
+
+</html>
