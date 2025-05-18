@@ -143,9 +143,8 @@
       <br />
       <button type="submit">Post Comment</button>
     </form>
-    <div id="comment-wall" style="padding: 1rem; background: #f0f3f9; border-radius: 12px; margin-top: 1rem;">
-      <p style="color:#888">No comments yet. Your kindness matters ✨</p>
-    </div>
+    $1
+<p style="margin-top: 1rem; font-style: italic; color: #6d7a94;">“Hope is a wish. Faith is building the ark before it rains.”</p>
   </div>
 
   <footer style="text-align: center; margin-top: 4rem; padding: 1rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #7a88a1;">
@@ -198,11 +197,28 @@
     prayerWall.appendChild(wrapper);
   }
 
-  function addCommentToWall(text) {
+  function addCommentToWall(text, commentId) {
     const box = document.createElement("div");
     box.className = "comment-box";
-    box.textContent = `💬 ${text}`;
+    const content = document.createElement("span");
+    content.textContent = `💬 ${text}`;
+
+    const like = document.createElement("button");
+    like.className = "pray-button";
+    like.style.marginLeft = "10px";
+    like.textContent = "❤️ 0";
+
+    like.onclick = () => {
+      db.ref(`comments/${commentId}/likes`).transaction(n => (n || 0) + 1);
+    };
+
+    box.appendChild(content);
+    box.appendChild(like);
     commentWall.appendChild(box);
+
+    db.ref(`comments/${commentId}/likes`).on("value", snap => {
+      like.textContent = `❤️ ${snap.val() || 0}`;
+    });
   }
 
   document.getElementById("prayer-form").addEventListener("submit", e => {
@@ -238,12 +254,14 @@
 
   db.ref("comments").on("child_added", snapshot => {
     const { text } = snapshot.val();
+    const id = snapshot.key;
     if (commentWall.querySelector("p")) commentWall.innerHTML = "";
-    addCommentToWall(text);
+    addCommentToWall(text, id);
   });
 </script>
 </body>
 
 </html>
+
 
 
