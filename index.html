@@ -171,20 +171,29 @@
   const prayerWall = document.getElementById("prayer-wall");
   const commentWall = document.getElementById("comment-wall");
 
-  function addPrayerToWall(text) {
+  function addPrayerToWall(text, prayerId) {
     const wrapper = document.createElement("div");
     wrapper.className = "prayer-entry";
     const span = document.createElement("span");
     span.textContent = `🙏 ${text}`;
+
+    const counter = document.createElement("span");
+    counter.style.margin = "0 10px";
+    counter.id = `counter-${prayerId}`;
+    counter.textContent = "❤️ 0";
+
     const button = document.createElement("button");
     button.className = "pray-button";
     button.textContent = "💖 I prayed";
     button.onclick = () => {
+      db.ref(`prayers/${prayerId}/count`).transaction(n => (n || 0) + 1);
       button.textContent = "✨ Prayed!";
       button.disabled = true;
       button.style.opacity = 0.7;
     };
+
     wrapper.appendChild(span);
+    wrapper.appendChild(counter);
     wrapper.appendChild(button);
     prayerWall.appendChild(wrapper);
   }
@@ -202,7 +211,7 @@
     if (text.trim() !== "") {
       document.getElementById("confirmation").style.display = "block";
       document.getElementById("prayer-text").value = "";
-      db.ref("prayers").push({ text });
+      db.ref("prayers").push({ text, count: 0 });
     }
   });
 
@@ -216,9 +225,15 @@
   });
 
   db.ref("prayers").on("child_added", snapshot => {
-    const { text } = snapshot.val();
-    if (prayerWall.querySelector("p")) prayerWall.innerHTML = "";
-    addPrayerToWall(text);
+    const { text, count = 0 } = snapshot.val();
+    const id = snapshot.key;
+    addPrayerToWall(text, id);
+    const counterEl = document.getElementById(`counter-${id}`);
+    if (counterEl) counterEl.textContent = `❤️ ${count}`;
+
+    db.ref(`prayers/${id}/count`).on("value", snap => {
+      if (counterEl) counterEl.textContent = `❤️ ${snap.val() || 0}`;
+    });
   });
 
   db.ref("comments").on("child_added", snapshot => {
@@ -230,4 +245,5 @@
 </body>
 
 </html>
+
 
