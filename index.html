@@ -152,82 +152,82 @@
     🌸 You are never alone. You are loved. This sanctuary is always open.
   </footer>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyALDfWG6FJLLE2afUGiRnR4knsCmvi7Ylk",
+    authDomain: "sanctuary-9117d.firebaseapp.com",
+    databaseURL: "https://sanctuary-9117d-default-rtdb.firebaseio.com",
+    projectId: "sanctuary-9117d",
+    storageBucket: "sanctuary-9117d.appspot.com",
+    messagingSenderId: "838948121825",
+    appId: "1:838948121825:web:113f930bc14856040d9ba0"
+  };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyALDfWG6FJLLE2afUGiRnR4knsCmvi7Ylk",
-      authDomain: "sanctuary-9117d.firebaseapp.com",
-      databaseURL: "https://sanctuary-9117d-default-rtdb.firebaseio.com",
-      projectId: "sanctuary-9117d",
-      storageBucket: "sanctuary-9117d.appspot.com",
-      messagingSenderId: "838948121825",
-      appId: "1:838948121825:web:113f930bc14856040d9ba0"
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const prayerWall = document.getElementById("prayer-wall");
+  const commentWall = document.getElementById("comment-wall");
+
+  function addPrayerToWall(text) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "prayer-entry";
+    const span = document.createElement("span");
+    span.textContent = `🙏 ${text}`;
+    const button = document.createElement("button");
+    button.className = "pray-button";
+    button.textContent = "💖 I prayed";
+    button.onclick = () => {
+      button.textContent = "✨ Prayed!";
+      button.disabled = true;
+      button.style.opacity = 0.7;
     };
+    wrapper.appendChild(span);
+    wrapper.appendChild(button);
+    prayerWall.appendChild(wrapper);
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  function addCommentToWall(text) {
+    const box = document.createElement("div");
+    box.className = "comment-box";
+    box.textContent = `💬 ${text}`;
+    commentWall.appendChild(box);
+  }
 
-    const prayerWall = document.getElementById("prayer-wall");
-    const commentWall = document.getElementById("comment-wall");
-
-    function addPrayerToWall(text) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "prayer-entry";
-      const span = document.createElement("span");
-      span.textContent = `🙏 ${text}`;
-      const button = document.createElement("button");
-      button.className = "pray-button";
-      button.textContent = "💖 I prayed";
-      button.onclick = () => {
-        button.textContent = "✨ Prayed!";
-        button.disabled = true;
-        button.style.opacity = 0.7;
-      };
-      wrapper.appendChild(span);
-      wrapper.appendChild(button);
-      prayerWall.appendChild(wrapper);
+  document.getElementById("prayer-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const text = document.getElementById("prayer-text").value;
+    if (text.trim() !== "") {
+      document.getElementById("confirmation").style.display = "block";
+      document.getElementById("prayer-text").value = "";
+      db.ref("prayers").push({ text });
     }
+  });
 
-    function addCommentToWall(text) {
-      const box = document.createElement("div");
-      box.className = "comment-box";
-      box.textContent = `💬 ${text}`;
-      commentWall.appendChild(box);
+  document.getElementById("comment-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const text = document.getElementById("comment-text").value;
+    if (text.trim() !== "") {
+      document.getElementById("comment-text").value = "";
+      db.ref("comments").push({ text });
     }
+  });
 
-    document.getElementById("prayer-form").addEventListener("submit", e => {
-      e.preventDefault();
-      const text = document.getElementById("prayer-text").value;
-      if (text.trim() !== "") {
-        document.getElementById("confirmation").style.display = "block";
-        document.getElementById("prayer-text").value = "";
-        push(ref(db, "prayers"), { text });
-      }
-    });
+  db.ref("prayers").on("child_added", snapshot => {
+    const { text } = snapshot.val();
+    if (prayerWall.querySelector("p")) prayerWall.innerHTML = "";
+    addPrayerToWall(text);
+  });
 
-    document.getElementById("comment-form").addEventListener("submit", e => {
-      e.preventDefault();
-      const text = document.getElementById("comment-text").value;
-      if (text.trim() !== "") {
-        document.getElementById("comment-text").value = "";
-        push(ref(db, "comments"), { text });
-      }
-    });
-
-    onChildAdded(ref(db, "prayers"), snapshot => {
-      const { text } = snapshot.val();
-      if (prayerWall.querySelector("p")) prayerWall.innerHTML = "";
-      addPrayerToWall(text);
-    });
-
-    onChildAdded(ref(db, "comments"), snapshot => {
-      const { text } = snapshot.val();
-      if (commentWall.querySelector("p")) commentWall.innerHTML = "";
-      addCommentToWall(text);
-    });
-  </script>
+  db.ref("comments").on("child_added", snapshot => {
+    const { text } = snapshot.val();
+    if (commentWall.querySelector("p")) commentWall.innerHTML = "";
+    addCommentToWall(text);
+  });
+</script>
 </body>
 
 </html>
+
