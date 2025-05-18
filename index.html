@@ -132,9 +132,7 @@
   </div>
   <div class="section">
     <h2>💖 Community Prayer Wall</h2>
-    <div id="prayer-wall" style="padding: 1rem; background: #f5f7fb; border-radius: 12px; max-height: 300px; overflow-y: auto;">
-      <p style="color:#888">No prayer requests yet. Be the first to share ✨</p>
-    </div>
+    <div id="prayer-wall" style="padding: 1rem; background: #f5f7fb; border-radius: 12px; max-height: 300px; overflow-y: auto;"></div>
   </div>
   <div class="section">
     <h2>💌 Leave a Kind Note</h2>
@@ -150,6 +148,7 @@
   <footer style="text-align: center; margin-top: 4rem; padding: 1rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #7a88a1;">
     🌸 You are never alone. You are loved. This sanctuary is always open.
   </footer>
+  <div style="text-align: center; margin-top: 1rem; font-style: italic; color: #6d7a94; font-size: 1rem;" id="scripture"></div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -255,12 +254,31 @@
     db.ref("comments").on("child_added", snapshot => {
       const { text } = snapshot.val();
       const id = snapshot.key;
-      if (commentWall.querySelector("p")) commentWall.innerHTML = "";
       addCommentToWall(text, id);
     });
+
+    const scriptures = [
+      "The Lord is close to the brokenhearted. — Psalm 34:18",
+      "Cast all your anxiety on Him because He cares for you. — 1 Peter 5:7",
+      "Be still, and know that I am God. — Psalm 46:10",
+      "The joy of the Lord is your strength. — Nehemiah 8:10",
+      "I can do all things through Christ who strengthens me. — Philippians 4:13",
+      "Even though I walk through the valley, I will fear no evil. — Psalm 23:4",
+      "The steadfast love of the Lord never ceases. — Lamentations 3:22",
+      "Let all that you do be done in love. — 1 Corinthians 16:14",
+      "God is within her, she will not fall. — Psalm 46:5",
+      "Faith is the assurance of things hoped for. — Hebrews 11:1"
+    ];
+
+    const scriptureEl = document.getElementById("scripture");
+    if (scriptureEl) {
+      const verse = scriptures[Math.floor(Math.random() * scriptures.length)];
+      scriptureEl.textContent = verse;
+    }
   </script>
 </body>
 </html>
+
 
 
 
