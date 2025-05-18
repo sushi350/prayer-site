@@ -143,8 +143,8 @@
       <br />
       <button type="submit">Post Comment</button>
     </form>
-    $1
-<p style="margin-top: 1rem; font-style: italic; color: #6d7a94;">“Hope is a wish. Faith is building the ark before it rains.”</p>
+    <div id="comment-wall" style="padding: 1rem; background: #f0f3f9; border-radius: 12px; margin-top: 1rem;"></div>
+    <p style="margin-top: 1rem; font-style: italic; color: #6d7a94;">“Hope is a wish. Faith is building the ark before it rains.”</p>
   </div>
 
   <footer style="text-align: center; margin-top: 4rem; padding: 1rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #7a88a1;">
@@ -152,116 +152,116 @@
   </footer>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyALDfWG6FJLLE2afUGiRnR4knsCmvi7Ylk",
-    authDomain: "sanctuary-9117d.firebaseapp.com",
-    databaseURL: "https://sanctuary-9117d-default-rtdb.firebaseio.com",
-    projectId: "sanctuary-9117d",
-    storageBucket: "sanctuary-9117d.appspot.com",
-    messagingSenderId: "838948121825",
-    appId: "1:838948121825:web:113f930bc14856040d9ba0"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  const prayerWall = document.getElementById("prayer-wall");
-  const commentWall = document.getElementById("comment-wall");
-
-  function addPrayerToWall(text, prayerId) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "prayer-entry";
-    const span = document.createElement("span");
-    span.textContent = `🙏 ${text}`;
-
-    const counter = document.createElement("span");
-    counter.style.margin = "0 10px";
-    counter.id = `counter-${prayerId}`;
-    counter.textContent = "❤️ 0";
-
-    const button = document.createElement("button");
-    button.className = "pray-button";
-    button.textContent = "💖 I prayed";
-    button.onclick = () => {
-      db.ref(`prayers/${prayerId}/count`).transaction(n => (n || 0) + 1);
-      button.textContent = "✨ Prayed!";
-      button.disabled = true;
-      button.style.opacity = 0.7;
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyALDfWG6FJLLE2afUGiRnR4knsCmvi7Ylk",
+      authDomain: "sanctuary-9117d.firebaseapp.com",
+      databaseURL: "https://sanctuary-9117d-default-rtdb.firebaseio.com",
+      projectId: "sanctuary-9117d",
+      storageBucket: "sanctuary-9117d.appspot.com",
+      messagingSenderId: "838948121825",
+      appId: "1:838948121825:web:113f930bc14856040d9ba0"
     };
 
-    wrapper.appendChild(span);
-    wrapper.appendChild(counter);
-    wrapper.appendChild(button);
-    prayerWall.appendChild(wrapper);
-  }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  function addCommentToWall(text, commentId) {
-    const box = document.createElement("div");
-    box.className = "comment-box";
-    const content = document.createElement("span");
-    content.textContent = `💬 ${text}`;
+    const prayerWall = document.getElementById("prayer-wall");
+    const commentWall = document.getElementById("comment-wall");
 
-    const like = document.createElement("button");
-    like.className = "pray-button";
-    like.style.marginLeft = "10px";
-    like.textContent = "❤️ 0";
+    function addPrayerToWall(text, prayerId) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "prayer-entry";
+      const span = document.createElement("span");
+      span.textContent = `🙏 ${text}`;
 
-    like.onclick = () => {
-      db.ref(`comments/${commentId}/likes`).transaction(n => (n || 0) + 1);
-    };
+      const counter = document.createElement("span");
+      counter.style.margin = "0 10px";
+      counter.id = `counter-${prayerId}`;
+      counter.textContent = "❤️ 0";
 
-    box.appendChild(content);
-    box.appendChild(like);
-    commentWall.appendChild(box);
+      const button = document.createElement("button");
+      button.className = "pray-button";
+      button.textContent = "💖 I prayed";
+      button.onclick = () => {
+        db.ref(`prayers/${prayerId}/count`).transaction(n => (n || 0) + 1);
+        button.textContent = "✨ Prayed!";
+        button.disabled = true;
+        button.style.opacity = 0.7;
+      };
 
-    db.ref(`comments/${commentId}/likes`).on("value", snap => {
-      like.textContent = `❤️ ${snap.val() || 0}`;
-    });
-  }
-
-  document.getElementById("prayer-form").addEventListener("submit", e => {
-    e.preventDefault();
-    const text = document.getElementById("prayer-text").value;
-    if (text.trim() !== "") {
-      document.getElementById("confirmation").style.display = "block";
-      document.getElementById("prayer-text").value = "";
-      db.ref("prayers").push({ text, count: 0 });
+      wrapper.appendChild(span);
+      wrapper.appendChild(counter);
+      wrapper.appendChild(button);
+      prayerWall.appendChild(wrapper);
     }
-  });
 
-  document.getElementById("comment-form").addEventListener("submit", e => {
-    e.preventDefault();
-    const text = document.getElementById("comment-text").value;
-    if (text.trim() !== "") {
-      document.getElementById("comment-text").value = "";
-      db.ref("comments").push({ text });
+    function addCommentToWall(text, commentId) {
+      const box = document.createElement("div");
+      box.className = "comment-box";
+      const content = document.createElement("span");
+      content.textContent = `💬 ${text}`;
+
+      const like = document.createElement("button");
+      like.className = "pray-button";
+      like.style.marginLeft = "10px";
+      like.textContent = "❤️ 0";
+
+      like.onclick = () => {
+        db.ref(`comments/${commentId}/likes`).transaction(n => (n || 0) + 1);
+      };
+
+      box.appendChild(content);
+      box.appendChild(like);
+      commentWall.appendChild(box);
+
+      db.ref(`comments/${commentId}/likes`).on("value", snap => {
+        like.textContent = `❤️ ${snap.val() || 0}`;
+      });
     }
-  });
 
-  db.ref("prayers").on("child_added", snapshot => {
-    const { text, count = 0 } = snapshot.val();
-    const id = snapshot.key;
-    addPrayerToWall(text, id);
-    const counterEl = document.getElementById(`counter-${id}`);
-    if (counterEl) counterEl.textContent = `❤️ ${count}`;
-
-    db.ref(`prayers/${id}/count`).on("value", snap => {
-      if (counterEl) counterEl.textContent = `❤️ ${snap.val() || 0}`;
+    document.getElementById("prayer-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const text = document.getElementById("prayer-text").value;
+      if (text.trim() !== "") {
+        document.getElementById("confirmation").style.display = "block";
+        document.getElementById("prayer-text").value = "";
+        db.ref("prayers").push({ text, count: 0 });
+      }
     });
-  });
 
-  db.ref("comments").on("child_added", snapshot => {
-    const { text } = snapshot.val();
-    const id = snapshot.key;
-    if (commentWall.querySelector("p")) commentWall.innerHTML = "";
-    addCommentToWall(text, id);
-  });
-</script>
+    document.getElementById("comment-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const text = document.getElementById("comment-text").value;
+      if (text.trim() !== "") {
+        document.getElementById("comment-text").value = "";
+        db.ref("comments").push({ text });
+      }
+    });
+
+    db.ref("prayers").on("child_added", snapshot => {
+      const { text, count = 0 } = snapshot.val();
+      const id = snapshot.key;
+      addPrayerToWall(text, id);
+      const counterEl = document.getElementById(`counter-${id}`);
+      if (counterEl) counterEl.textContent = `❤️ ${count}`;
+
+      db.ref(`prayers/${id}/count`).on("value", snap => {
+        if (counterEl) counterEl.textContent = `❤️ ${snap.val() || 0}`;
+      });
+    });
+
+    db.ref("comments").on("child_added", snapshot => {
+      const { text } = snapshot.val();
+      const id = snapshot.key;
+      if (commentWall.querySelector("p")) commentWall.innerHTML = "";
+      addCommentToWall(text, id);
+    });
+  </script>
 </body>
-
 </html>
+
 
 
 
